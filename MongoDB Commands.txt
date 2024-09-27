@@ -1,0 +1,670 @@
+Aggregation
+
+
+db.users.aggregate([{$match: {isActive: true}}, {$count: 'activeUsers'}])
+
+
+db.users.aggregate([{$group: {_id: '$gender', averageAge: {$avg: '$age'}}}])
+
+
+db.users.aggregate([{$group: {_id: null, averageAge: {$avg: '$age'}}}])
+
+
+db.users.aggregate([{$group: {_id: '$favoriteFruit', count: {$sum: 1}}}])
+
+
+db.users.aggregate([{$group: {_id: '$favoriteFruit', count: {$sum: 1}}}, {$sort: {count: -1}}])
+
+
+db.users.aggregate([{$group: {_id: '$favoriteFruit', count: {$sum: 1}}}, {$sort: {count: -1}}, {$limit: 2}])
+
+
+db.users.aggregate([{$group: {_id: '$gender', genderCount: {$sum: 1}}}])
+
+
+db.users.aggregate([{$group: {_id: '$eyeColor'}}])
+
+
+db.users.aggregate([{$unwind: '$tags'}, {$group: {_id: '$_id', numberOfTags: {$sum: 1}}}, {$group: {_id: null, averageNumberOfTags: {$avg:
+'$numberOfTags'}}}])
+
+
+db.users.aggregate([{$addFields: {numberOfTags: {$size: {$ifNull: ['$tags', []]}}}}, {$group: {_id: null, averageNumberOfTags: {$avg: '$numberOfTags'}}}])
+
+
+db.users.aggregate([{$match: {tags: 'enim'}}])
+
+
+db.users.aggregate([{$match: {tags: 'enim'}}, {$group: {_id: null, count: {$sum: 1}}}])
+
+
+ db.users.aggregate([{$match: {tags: 'enim'}}, {$count: 'usersWithEnimTag'}])
+
+
+db.users.aggregate([{$match: {isActive: false, tags: 'velit'}}, {$project: {name: 1, age: 1}}])
+
+
+db.users.aggregate([{$match: {'company.phone': /^\+1 \(940\)/}}, {$count: 'usersWithSpecialPhoneNumber'}])
+
+
+db.users.aggregate([{$sort: {registered: -1}}, {$limit: 4}, {$project: {name:1, registered:1, favoriteFruit:1}}])
+
+
+db.users.aggregate([{$group: {_id: '$favoritefruit', users: {$push: '$name'}}}])
+
+
+db.users.aggregate([{$match: {'tags.1': 'ad'}}])
+
+
+db.users.aggregate([{$match: {'tags.1': 'ad'}}, {$count: 'secondTagAd'}])
+
+
+db.users.aggregate([{$match: {tags: {$all: ['enim', 'id']}}}])
+
+
+db.users.aggregate([{$match: {'company.location.country': 'USA'}}, {$count: 'usercount'}])
+
+
+db.users.aggregate([{$match: {'company.location.country': 'USA'}}, {$group: {_id: null, userCount: {$sum: 1}}}])
+
+
+db.users.aggregate([{$match: {'company.location.country': 'USA'}}, {$group: {_id: '$company.title', userCount: {$sum: 1}}}])
+
+
+db.books.aggregate([{$lookup: {from: 'authors', localField: 'author_id', foreignField: '_id', as: 'author_details'}}])
+
+
+db.books.aggregate([{$lookup: {from: 'authors', localField: 'author_id', foreignField: '_id', as: 'author_details'}}, {$addFields: {author_details: {$first: '$author_details'}}}])
+
+
+db.books.aggregate([{$lookup: {from: 'authors', localField: 'author_id', foreignField: '_id', as: 'author_details'}}, {$addFields: {author_details: {$arrayElemAt: ['$author_details', 0]}}}])
+
+
+
+
+
+MongoDB Technical Task
+
+
+db.students.find()
+
+
+db.students.insertMany([
+  {
+    "srn": 110,
+    "sname": "Rahul",
+    "degree": "BCA",
+    "sem": 6,
+    "CGPA": 7.9
+  },
+  {
+    "srn": 111,
+    "sname": "Anjali",
+    "degree": "BSc",
+    "sem": 4,
+    "CGPA": 8.2
+  },
+  {
+    "srn": 112,
+    "sname": "Vikram",
+    "degree": "BCA",
+    "sem": 5,
+    "CGPA": 7.5
+  },
+  {
+    "srn": 113,
+    "sname": "Sneha",
+    "degree": "BBA",
+    "sem": 6,
+    "CGPA": 8.1
+  },
+  {
+    "srn": 114,
+    "sname": "Arjun",
+    "degree": "BCom",
+    "sem": 3,
+    "CGPA": 7.4
+  },
+  {
+    "srn": 115,
+    "sname": "Meera",
+    "degree": "BA",
+    "sem": 2,
+    "CGPA": 8.6
+  },
+  {
+    "srn": 116,
+    "sname": "Karan",
+    "degree": "BSc",
+    "sem": 5,
+    "CGPA": 7.8
+  },
+  {
+    "srn": 117,
+    "sname": "Pooja",
+    "degree": "BCA",
+    "sem": 6,
+    "CGPA": 8.3
+  },
+  {
+    "srn": 118,
+    "sname": "Rohit",
+    "degree": "BBA",
+    "sem": 4,
+    "CGPA": 7.7
+  },
+  {
+    "srn": 119,
+    "sname": "Aditi",
+    "degree": "BCom",
+    "sem": 6,
+    "CGPA": 8.0
+  }
+])
+
+
+
+db.students.findOne({sname: 'Rahul'})
+
+
+db.students.find({degree: 'BCA'})       OR        db.students.aggregate([{$match: {'degree': 'BCA'}}])
+
+
+
+db.students.find().sort({srn: 1})
+
+
+
+db.students.find().sort({srn: 1}).limit(5)
+
+
+
+db.students.find().skip(4).limit(3)
+
+
+db.students.findOne({sname: 'Rahul'}, {degree: 1, _id: 0})
+
+
+db.students.find({sname: 'Rahul'}, {degree: 1, _id: 0, sname: 1})
+
+
+db.students.find().sort({CGPA: -1}).skip(4).limit(3)
+
+
+db.students.countDocuments({degree: 'BCA'})        OR          db.students.find({degree: 'BCA'}).count()
+
+
+db.students.find({}, {degree: 1, _id: 0})
+
+
+ db.students.distinct('degree')
+
+
+db.students.find({degree: 'BCA', CGPA: 8.3})
+
+
+db.students.find({degree: 'BCA', CGPA: {$gt: 6, $lt: 8}})
+
+
+
+Employees
+
+
+
+db.employees.find({salary: {$gte: 30000, $lte: 35000}})
+
+
+db.employees.find({ename: 'Sanjay'}, {salary: 1, _id: 0})
+
+
+db.employees.updateMany({desig: 'developer'}, {$inc: {salary: 5000}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$set: {age: 25}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$unset: {yoj: ''}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$set: {project: []}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$push: {project: 'p2', 'p3'}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$pull: {project: ['p4']}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$set: {contacts: {email: ['sanjay@gmail.com', 'sanj@gmail.com'], phone: []}}})
+
+
+db.employees.updateOne({ename: 'Sanjay'}, {$push: {'contacts.phone': {$each: ['1234', '5678']}}})
+
+
+
+
+
+
+
+BookStore
+
+
+
+db.books.find({}, {bname: 1, author: 1, publisher: 1, _id: 0})
+
+
+db.books.find({author: 'David Wilson'}, {bname: 1, _id: 0})
+
+
+db.books.find({publisher: 'pearson'}, {bname: 1, _id: 0})
+
+
+db.books.find({bname: 'Java Basics'}, {publisher: 1, _id: 0})
+
+
+db.books.find({bname: 'let us C'}, {author: 1, publisher: 1, year: 1, _id: 0})
+
+
+db.books.find({bname: 'let us C'}, {price: 1, _id: 0})
+
+
+db.books.find({}, {bname: 1, _id: 0}).sort({bname: 1})
+
+
+db.books.find({}, {bname: 1, price: 1, _id: 0}).sort({price: -1}).limit(3)
+
+
+db.books.find({author: {$all: ['David Wilson', 'Emma Watson']}}, {bname:1, _id: 0})
+
+
+db.books.find({author: {$in: ['David Wilson', 'Emma Watson']}}, {bname: 1, _id: 0})
+
+
+db.books.find({'author.0': 'John Doe'})
+
+
+
+
+
+
+Food Database
+
+
+
+db.food.find({foodname: 'pizza'}, {price: 1, ingredients: 1, _id: 0})
+
+
+db.food.find({price: {$gte: 500, $lte: 800}})
+
+
+db.food.find({chefname: {$all: ['amit', 'rahul']}})
+
+
+db.food.find({chefname: {$in: ['amit', 'simran']}})
+
+
+db.food.updateOne({foodname: 'pizza'}, {$push: {chefname: 'kevin'}})
+
+
+db.food.updateOne({foodname: 'burger'}, {$push: {ingredients: {$each: ['pattie', 'tomato']}}})
+
+
+db.food.updateOne({foodname: 'burger'}, {$pop: {ingredients: 1}})   1 or -1(remove from beginning)
+
+
+db.food.updateOne({foodname: 'pizza'}, {$set: {ingredients: []}})  this is preferred way as pop can only ermove one item at a time and unset removes the ingredients as a whole
+
+
+db.food.updateOne({foodname: 'burger'}, {$set: {foodtype: 'buns'}})
+
+
+db.food.updateOne({foodname: 'burger'}, {$set: {price: 200}})     or to incerement  db.food.updateOne({foodname: 'burger'}, {$inc: {price: 100}})
+
+
+db.food.updateOne({foodid: 'f08'}, {$set: {
+...       foodcat: "Italian",
+...       foodname: "Pasta",
+...       chefname: ["Gordon Ramsay", "Jamie Oliver"],
+...       price: 750,
+...       ingredients: ["pasta", "tomato sauce", "cheese"],
+...       hotelname: "Italian Bistro",
+...       address: {
+...         no: 45,
+...         street: "Olive Street",
+...         locality: "Downtown",
+...         city: "New York"
+...       }
+...     }}, {upsert: true})
+
+
+
+db.food.updateMany({foodcat: 'fast food'}, {$inc: {price: 120}})
+
+
+
+
+
+Aggregation Revision
+
+
+
+
+Count the total number of books in the books collection.
+
+db.bookaggree.aggregate([{$group: {_id: null, bookcount: {$sum: 1}}}])
+
+
+
+Find the total revenue generated from all books in the books collection.
+
+db.bookaggree.aggregate([{$group: {_id: null, totalRevenue: {$sum: '$price'}}}])
+
+
+
+
+Calculate the average price of books in the books collection.
+
+db.bookaggree.aggregate([{$group: {_id:null, averagePrice: {$avg: '$price'}}}])
+
+
+
+
+
+Find the book with the highest price in the books collection.
+
+db.bookaggree.aggregate([{$sort: {price: -1}}, {$limit: 1}])
+
+
+
+
+
+
+Find the book with the lowest price in the books collection.
+
+db.bookaggree.aggregate([{$sort: {price: 1}}, {$limit: 1}])
+
+
+
+
+
+
+Group books by genre and count the number of books in each genre.
+
+db.bookaggree.aggregate([{$group: {_id: '$genre', bookCountPerGenre: {$sum: 1}}}])
+
+
+
+
+
+Group books by author and calculate the total revenue generated by each author's books.
+
+db.bookaggree.aggregate([{$group: {_id: '$author', totalRevenuePerAuthor: {$sum: '$price'}}}])
+
+
+
+
+Filter books that were published before the year 1950 and count the number of such books.
+
+db.bookaggree.aggregate([{$match: {published_year: {$lt: 1950}}}, {$count: 'countBefore1950'}])
+
+
+
+
+
+Filter books with a rating of 4 or higher and calculate the average price of these books.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$match: {'reviews.rating': {$gte: 4}}}, {$group: {_id: null, averagePrice: {$avg: '$price'}}}])
+
+
+
+
+
+
+Project only the title and price fields from the books collection.
+
+db.bookaggree.aggregate([{$project: {title: 1, price: 1, _id: 0}}])
+
+
+
+
+
+
+Add a new field discount_price to each book, which is 10% less than the original price.
+
+db.bookaggree.aggregate([{$addFields: {discount_price: {$multiply: ['$price', 0.9]}}}])
+
+
+
+
+
+
+Sort books by price in ascending order.
+
+db.bookaggree.aggregate([{$sort: {price: 1}}])
+
+
+
+
+
+
+Sort books by price in descending order.
+
+db.bookaggree.aggregate([{$sort: {price: -1}}])
+
+
+
+
+
+
+
+Limit the number of books returned to 3.
+
+db.bookaggree.aggregate([{$sort: {price: 1}}, {$limit: 3}])
+
+
+
+
+
+
+Skip the first 2 books and return the rest.
+
+db.bookaggree.aggregate([{$sort: {price: 1}}, {$skip: 2}])
+
+
+
+
+
+
+Unwind the reviews array and count the total number of reviews.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$count: 'reviewCount'}])
+
+
+
+
+
+
+Group books by genre and calculate the average rating for each genre.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$genre', averageRating: {$avg: '$reviews.rating'}}}])
+
+
+
+
+
+
+Group books by author and find the author with the highest average book rating.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$author', averageRatingPerAuthor: {$avg: '$reviews.rating'}}}, {$sort: {averageRatingPerAuthor: -1}}, {$limit: 1}])
+
+
+
+
+
+
+
+Find the distinct genres of books in the books collection.
+
+db.bookaggree.aggregate([{$group: {_id: '$genre'}}])
+
+
+
+
+
+
+Calculate the total revenue generated by each genre of books.
+
+db.bookaggree.aggregate([{$group: {_id: '$genre', totalRevenue: {$sum: '$price'}}}])
+
+
+
+
+
+
+Find the total number of books in each genre.
+
+db.bookaggree.aggregate([{$group: {_id: '$genre', bookCount: {$sum: 1}}}])
+
+
+
+
+
+
+Calculate the average price of books by genre.
+
+db.bookaggree.aggregate([{$group: {_id: '$genre', averageBookPrice: {$avg: '$price'}}}])
+
+
+
+
+
+
+Find the total revenue generated by books published after the year 1930.
+
+db.bookaggree.aggregate([{$match:{published_year: {$gt: 1930}}}, {$group: {_id: null, totalRevenue: {$sum: '$price'}}}])
+
+
+
+
+
+
+Find the total number of reviews for each book.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$_id', reviewCount: {$sum: 1}}}])
+
+
+
+
+
+
+Find the highest rated book for each genre.
+
+Use $unwind to list each book review as a separate document.
+
+ db.bookaggree.aggregate([{$unwind: '$reviews'}])
+
+
+
+
+
+
+Use $group and $push to create an array of books for each author.
+
+ db.bookaggree.aggregate([{$group: {_id: '$author', books: {$push: {title: '$title'}}}}])
+
+
+
+
+
+
+Use $match to filter books with a price between $10 and $20.
+
+db.bookaggree.aggregate([{$match: {price: {$gt: 10, $lt: 20}}}])
+
+
+
+
+
+
+Use $project to add a field year_published to each book.
+
+db.bookaggree.aggregate([{$project: {published_year: 1, year_published: '$published_year'}}])
+
+
+
+
+
+
+Calculate the average rating for each book.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$title', averageRating: {$avg: '$reviews.rating'}}}])
+
+
+
+
+
+
+Find the book with the most reviews.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$title', reviewCount: {$sum: 1}}}, {$sort: {reviewCount: -1}}, {$limit: 1}])
+
+
+
+
+
+
+Use $sortByCount to count the number of books for each author.
+
+db.bookaggree.aggregate([{$sortByCount: '$author'}])
+
+
+
+
+
+Find the total number of distinct reviewers in the books collection.
+
+db.bookaggree.aggregate([{$unwind: '$reviews'}, {$group: {_id: '$reviews.reviewer'}}, {$count: 'countOfReviewer'}])
+
+
+
+
+
+Calculate the average rating for each book and sort the books by average rating in descending order.
+
+Use $lookup to join books and reviews collections and list all reviews with book details.
+
+Group books by published_year and count the number of books published in each year.
+
+Calculate the total revenue generated by books with a rating of 5.
+
+Use $project to rename the price field to cost for each book.
+
+Use $addFields to add a new field review_count that counts the number of reviews for each book.
+
+Use $lookup to join books and orders collections and list all books that have been ordered.
+
+Filter the joined documents to show only orders for books with a price greater than $15.
+
+Project fields from both the books and orders collections in the joined result.
+
+Add a new field total_reviews to each book, which is the count of reviews for that book.
+
+Use $redact to conditionally exclude books with a rating lower than 3.
+
+Use $bucket to group books by price range and count the number of books in each range.
+
+Use $bucketAuto to automatically determine the price ranges for books and count the number of books in each range.
+
+Use $facet to create multiple aggregation pipelines: one for the total number of books, and another for the average price of books.
+
+Use $match to filter orders placed by customer C1 and count the number of such orders.
+
+Group books by decade and count the number of books published in each decade.
+
+Use $lookup to join books and authors collections and list all books with author details.
+
+
+
+
+
+
